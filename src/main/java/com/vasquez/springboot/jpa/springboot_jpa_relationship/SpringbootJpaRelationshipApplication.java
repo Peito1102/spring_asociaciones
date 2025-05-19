@@ -1,5 +1,6 @@
 package com.vasquez.springboot.jpa.springboot_jpa_relationship;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,49 @@ public class SpringbootJpaRelationshipApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		OneToMany();
+		removeAddress();
 	}
 
 	@Transactional
-	public void OneToMany() {
+	public void removeAddress() {
+		Client client = new Client("Lizu","Loayza");
+		Address address1 = new Address("El verjel", 1234);
+		Address address2 = new Address("Vasco de Gama", 9876);
+
+		client.getAddresses().add(address1);
+		client.getAddresses().add(address2);
+
+		clientRepository.save(client);
+
+		System.out.println(client);
+
+		Optional<Client> optionalClient = clientRepository.findById(3L);
+		optionalClient.ifPresent(c -> {
+			c.getAddresses().remove(address1);
+			clientRepository.save(c);
+			System.out.println(c);
+		});
+	}
+
+	@Transactional
+	public void oneToManyFindById() {
+
+		Optional<Client> optionalClient = clientRepository.findById(2L);
+		optionalClient.ifPresent(client -> {
+			Address address1 = new Address("El verjel", 1234);
+		Address address2 = new Address("Vasco de Gama", 9876);
+
+		client.setAddresses(Arrays.asList(address1, address2));
+
+		Client clienteDB = clientRepository.save(client);
+
+		System.out.println(clienteDB);
+		});
+		
+	}
+	
+	@Transactional
+	public void oneToMany() {
 		Client client = new Client("Lizu","Loayza");
 		Address address1 = new Address("El verjel", 1234);
 		Address address2 = new Address("Vasco de Gama", 9876);

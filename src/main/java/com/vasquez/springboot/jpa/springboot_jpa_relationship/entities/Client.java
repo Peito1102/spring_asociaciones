@@ -8,8 +8,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "clients")
@@ -23,6 +26,11 @@ public class Client {
     private String lastname;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) //cascada es para que se cree, elimine, actualice en conjunto con los correos
+    //@JoinColumn(name = "client_id")
+    @JoinTable(name = "tbl_clientes_to_direcciones",
+        joinColumns = @JoinColumn(name="id_cliente"),
+        inverseJoinColumns = @JoinColumn(name="id_direcciones"),
+        uniqueConstraints = @UniqueConstraint(columnNames = "{id_direcciones}"))
     private List<Address> addresses;
 
     public Client(String name, String lastname) {
