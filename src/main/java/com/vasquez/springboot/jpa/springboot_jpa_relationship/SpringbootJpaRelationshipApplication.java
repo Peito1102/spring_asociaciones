@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.entities.Address;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.entities.Client;
+import com.vasquez.springboot.jpa.springboot_jpa_relationship.entities.ClientDetails;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.entities.Invoice;
+import com.vasquez.springboot.jpa.springboot_jpa_relationship.repositories.ClientDetailsRepository;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.repositories.ClientRepository;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.repositories.InvoiceRepository;
 
@@ -25,13 +27,72 @@ public class SpringbootJpaRelationshipApplication implements CommandLineRunner {
 	@Autowired
 	private InvoiceRepository invoiceRepository;
 
+	@Autowired
+	private ClientDetailsRepository clientDetailsRepository;
+
 	public static void main(String[] args) {
 		SpringApplication.run(SpringbootJpaRelationshipApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		removeInvoiceBidireccionalFindById();
+		oneToOneBidireccionalFindById();
+	}
+
+	@Transactional
+	public void oneToOneBidireccionalFindById() {
+		Optional<Client> clientOptional = clientRepository.findOne(1L);
+		clientOptional.ifPresent(c -> {
+			ClientDetails clientDetails = new ClientDetails(true, 5000);
+
+			c.setClientDetails(clientDetails);
+			Client nc = clientRepository.save(c);
+		
+			System.out.println(nc);
+		});
+		
+
+	}
+
+	@Transactional
+	public void oneToOneBidireccional() {
+		Client client = new Client("Erba", "Pura");
+
+		ClientDetails clientDetails = new ClientDetails(true, 5000);
+
+		client.setClientDetails(clientDetails);
+		clientRepository.save(client);
+		
+		System.out.println(client);
+
+	}
+
+	@Transactional
+	public void oneToOneFindById() {
+		ClientDetails clientDetails = new ClientDetails(true, 5000);
+		clientDetailsRepository.save(clientDetails);
+
+		Optional<Client> clientOptional = clientRepository.findOne(2L); //new Client("Erba", "Pura");
+		clientOptional.ifPresent(c -> {
+			c.setClientDetails(clientDetails);
+			clientRepository.save(c);
+		
+			System.out.println(c);
+		});
+		
+	}
+
+	@Transactional
+	public void oneToOne() {
+		ClientDetails clientDetails = new ClientDetails(true, 5000);
+		clientDetailsRepository.save(clientDetails);
+
+		Client client = new Client("Erba", "Pura");
+		client.setClientDetails(clientDetails);
+		clientRepository.save(client);
+		
+		System.out.println(clientDetails);
+
 	}
 
 	@Transactional
