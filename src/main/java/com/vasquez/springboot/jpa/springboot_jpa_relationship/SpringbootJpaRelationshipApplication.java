@@ -1,6 +1,7 @@
 package com.vasquez.springboot.jpa.springboot_jpa_relationship;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -13,10 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.entities.Address;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.entities.Client;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.entities.ClientDetails;
+import com.vasquez.springboot.jpa.springboot_jpa_relationship.entities.Course;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.entities.Invoice;
+import com.vasquez.springboot.jpa.springboot_jpa_relationship.entities.Student;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.repositories.ClientDetailsRepository;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.repositories.ClientRepository;
 import com.vasquez.springboot.jpa.springboot_jpa_relationship.repositories.InvoiceRepository;
+import com.vasquez.springboot.jpa.springboot_jpa_relationship.repositories.StudentRepository;
 
 @SpringBootApplication
 public class SpringbootJpaRelationshipApplication implements CommandLineRunner {
@@ -30,13 +34,33 @@ public class SpringbootJpaRelationshipApplication implements CommandLineRunner {
 	@Autowired
 	private ClientDetailsRepository clientDetailsRepository;
 
+	@Autowired
+	private StudentRepository studentRepository;
+
 	public static void main(String[] args) {
 		SpringApplication.run(SpringbootJpaRelationshipApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		oneToOneBidireccionalFindById();
+		manyToMany();
+	}
+
+	@Transactional
+	public void manyToMany() {
+		Student student1 = new Student("Jano", "Pura");
+		Student student2 = new Student("Erba", "Doe");
+
+		Course course1 = new Course("Course de java master", "Andres");
+		Course course2 = new Course("Course de Spring Boot", "Andres");
+
+		student1.setCourses(Set.of(course1, course2));
+		student2.setCourses(Set.of(course2));
+
+		studentRepository.saveAll(List.of(student1,student2));
+
+		System.out.println(student1);
+		System.out.println(student2);	
 	}
 
 	@Transactional
